@@ -14,30 +14,116 @@ class App extends React.Component {
       ['+/-', '0', '.', '=']
     ];
 
-    this.val1 = ''
-    this.val2 = ''
-    this.holder = ''
-    this.operator = ''
-    this.prep = ''
-    this.showing = ''
-    this.handle = this.handle.bind(this)
-    this.lookingForSecondVal = false
-    this.operatorEntered = false
-  }
-
-  handle = (char) => {
-    if (char in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'] || char === '.') {
-      this.handleNumber(char)
-    } else {
-      this.handleOperator(char)
+    this.staging_operation = {
+      "operator": '',
+      "number": ''
     }
 
-    console.log(`val1: ${this.val1}, val2: ${this.val2}, looking: ${this.lookingForSecondVal}, operator: ${this.operator}, operatorEntered: ${this.operatorEntered}, prep: ${this.prep}`)
+    this.current_number = ''
+    this.State = 0
+  }
 
-    this.showing = this.formatOutput(this.prep)
 
+  keyPressed = (key) => {
+    let transitioned = this.stateTransitions(key)
+    this.display = this.formatOutput(this.outputUpdate(key, transitioned))
     this.forceUpdate()
   }
+
+  stateTransitions = (key) => {
+    let keyIsNumber = key === '0' || key === '1' || key === '2' || key === '3' || key === '4' ||
+                      key === '5' || key === '6' || key === '7' || key === '8' || key === '9'
+    let keyIsOperator = key === '+' || key === '-' || key === 'x' || key === '/' || key === '^'
+    let keyIsEquals = key === '='
+    let keyIsClear = key === 'C'
+    let tempState = this.State
+
+    if(keyIsClear){
+      this.State = 0
+    }
+    else if (this.State === 0 && keyIsNumber) {
+      this.State = 1
+    }
+    else if (this.State === 1 && keyIsOperator) {
+      this.State = 2
+    }
+    else if (this.State === 2 && keyIsNumber) {
+      this.State = 3
+    }
+    else if (this.State === 3 && keyIsOperator) {
+      this.State = 4
+    }
+    else if (this.State === 3 && keyIsEquals) {
+      this.State = 5
+    }
+    else if (this.State === 4 && keyIsNumber) {
+      this.State = 3
+    }
+    else if (this.State === 5 && keyIsEquals) {
+      this.State = 5
+    }
+    else if (this.State === 5 && keyIsNumber) {
+      this.State = 1
+    }
+    else if (this.State === 5 && keyIsOperator) {
+      this.State = 2
+    }
+
+    return tempState !== this.State
+  }
+
+  outputUpdate = (key, transitioned) => {
+    let keyIsNumber = key === '0' || key === '1' || key === '2' || key === '3' || key === '4' ||
+                      key === '5' || key === '6' || key === '7' || key === '8' || key === '9'
+    let keyIsOperator = key === '+' || key === '-' || key === 'x' || key === '/' || key === '^'
+    let keyIsEquals = key === '='
+
+    if(this.State === 0){
+      this.display = ''
+    }
+    if (this.State === 1 && keyIsNumber) {
+      this.current_number = transitioned ? key : this.current_number + key
+      this.display = this.current_number
+    }
+    if (this.State === 2 && keyIsOperator) {
+      this.staging_operation.operator = key
+      this.display = this.current_number
+    }
+    if (this.State === 3 && keyIsNumber) {
+      this.staging_operation.number = transitioned ? key : this.staging_operation.number + key
+      this.display = this.staging_operation.number
+    }
+    if (this.State === 4 && keyIsOperator && transitioned) {
+      this.current_number = this.calculate(this.staging_operation, this.current_number)
+      this.display = this.current_number
+      this.staging_operation.operator = key
+    }
+    if (this.State === 5 && keyIsEquals) {
+      this.current_number = this.calculate(this.staging_operation, this.current_number)
+      this.display = this.current_number
+    }
+    return this.display
+  }
+
+
+  calculate = (operation, current) => {
+    if (operation.operator === '+') {
+      return String(Number(current) + Number(operation.number))
+    }
+    else if (operation.operator === '-') {
+      return String(Number(current) - Number(operation.number))
+    }
+    else if (operation.operator === 'x') {
+      return String(Number(current) * Number(operation.number))
+    }
+    else if (operation.operator === '/') {
+      return String(Number(current) / Number(operation.number))
+    }
+    else if (operation.operator === '^') {
+      return String(Math.pow(Number(current), Number(operation.number)))
+    }
+  }
+
 
   formatOutput = (raw) => {
 
@@ -70,99 +156,13 @@ class App extends React.Component {
 
   }
 
-  handleNumber = (val) => {
-    if (this.prep === '') {
-      this.prep = val
-    }
-    else if (this.operator === '') {
-      if (!(val === '.' && this.prep.indexOf('.') > -1)) {
-        this.prep = this.prep + val
-      }
-    }
-    else if (this.operator !== '' && this.val1 === '') {
-      this.val1 = Number(this.prep)
-      this.prep = val
-      this.lookingForSecondVal = false
-    }
-    else if (this.operator !== '' && this.val1 !== '' && !this.lookingForSecondVal) {
-      this.prep = this.prep + val
-    }
-    else if (this.operator !== '' && this.val1 !== '' && this.val2 === '' && this.lookingForSecondVal) {
-      this.prep = val
-      this.lookingForSecondVal = false
-      this.val2 = ''
-    }
-    else if (this.operator !== '' && this.val1 !== '' && this.val2 !== '' && this.lookingForSecondVal && !this.operatorEntered) {
-      this.val1 = ''
-      this.val2 = ''
-      this.holder = ''
-      this.lookingForSecondVal = false
-      this.operator = ''
-      this.operatorEntered = false
-      this.prep = val
-      this.showing = ''
-    }
-  }
-
-  handleOperator = (op) => {
-    if (op!=='=' && this.operator !== '' && this.val1 !== '' && this.val2 !== '' && this.lookingForSecondVal) {
-      this.operatorEntered = true
-    }
-
-    if (op === 'C') {
-      this.val1 = ''
-      this.val2 = ''
-      this.holder = ''
-      this.lookingForSecondVal = false
-      this.operator = ''
-      this.operatorEntered = false
-      this.prep = ''
-      this.showing = ''
-    }
-    else if (op === '=') {
-      if (this.val2 === '') {
-        this.holder = Number(this.prep)
-      }
-      if (this.operator === '+') {
-        this.prep = this.val2 ? this.val2 + Number(this.prep) : this.val1 + Number(this.prep)
-      }
-      else if (this.operator === '-') {
-        this.prep = this.val2 ? Number(this.prep) - this.val2 : Number(this.prep) - this.val1
-      }
-      else if (this.operator === 'x') {
-        this.prep = this.val2 ? this.val2 * Number(this.prep) : this.val1 * Number(this.prep)
-      }
-      else if (this.operator === '/') {
-        this.prep = this.val2 ? Number(this.prep) / this.val2 : Number(this.prep) / this.val1
-      }
-      else if (this.operator === '^') {
-        this.prep = this.val2 ? Math.pow(this.val2, Number(this.prep)) : Math.pow(this.val1, Number(this.prep))
-      }
-      if (this.val2 === '') {
-        this.val2 = this.holder
-        this.holder = ''
-      }
-      this.lookingForSecondVal = true
-    }
-    else if (op === '%') {
-      this.prep = Number(this.prep) / 100
-    }
-    else if (op === '+/-') {
-      this.prep = Number(this.prep) * -1
-    }
-    else {
-      this.val1 = Number(this.prep)
-      this.lookingForSecondVal = true
-      this.operator = op !== '=' ? op : this.operator
-    }
-  }
-
   render() {
+    console.log(`current number: ${this.current_number}, st_op.op: ${this.staging_operation.operator}, st_op.num: ${this.staging_operation.number}, state: ${this.State}, display: ${this.display}`)
 
     return (
       <div className="App">
         <div className="row">
-          <div className='display'>{this.showing}</div>
+          <div className='display'>{this.display}</div>
         </div>
 
         {this.buttons.map((valList, idx) => {
@@ -170,7 +170,7 @@ class App extends React.Component {
             <div key={idx.toString()} className="row">
               {valList.map(val => {
                 return (
-                  <button key={val} className="button" onClick={() => this.handle(val)}>
+                  <button key={val} className="button" onClick={() => this.keyPressed(val)}>
                     {val}
                   </button>
                 )
