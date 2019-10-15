@@ -32,8 +32,9 @@ class App extends React.Component {
 
   stateTransitions = (key) => {
     let keyIsNumber = key === '0' || key === '1' || key === '2' || key === '3' || key === '4' ||
-                      key === '5' || key === '6' || key === '7' || key === '8' || key === '9'
+                      key === '5' || key === '6' || key === '7' || key === '8' || key === '9' || key === '.'
     let keyIsOperator = key === '+' || key === '-' || key === 'x' || key === '/' || key === '^'
+    let keyIsSpecialOperator = key === '+/-' || key === '%'
     let keyIsEquals = key === '='
     let keyIsClear = key === 'C'
     let tempState = this.State
@@ -46,6 +47,9 @@ class App extends React.Component {
     }
     else if (this.State === 1 && keyIsOperator) {
       this.State = 2
+    }
+    else if (this.State === 1 && keyIsSpecialOperator) {
+      this.State = 5
     }
     else if (this.State === 2 && keyIsNumber) {
       this.State = 3
@@ -74,23 +78,25 @@ class App extends React.Component {
 
   outputUpdate = (key, transitioned) => {
     let keyIsNumber = key === '0' || key === '1' || key === '2' || key === '3' || key === '4' ||
-                      key === '5' || key === '6' || key === '7' || key === '8' || key === '9'
+                      key === '5' || key === '6' || key === '7' || key === '8' || key === '9' || key === '.'
     let keyIsOperator = key === '+' || key === '-' || key === 'x' || key === '/' || key === '^'
+    let keyIsSpecialOperator = key === '+/-' || key === '%'
     let keyIsEquals = key === '='
 
     if(this.State === 0){
       this.display = ''
     }
     if (this.State === 1 && keyIsNumber) {
-      this.current_number = transitioned ? key : this.current_number + key
+      let doublePeriod = key === '.' && this.current_number.includes('.')
+      this.current_number = transitioned ? key : doublePeriod ? this.current_number : this.current_number + key
       this.display = this.current_number
     }
     if (this.State === 2 && keyIsOperator) {
       this.staging_operation.operator = key
-      this.display = this.current_number
     }
     if (this.State === 3 && keyIsNumber) {
-      this.staging_operation.number = transitioned ? key : this.staging_operation.number + key
+      let doublePeriod = key === '.' && this.staging_operation.number.includes('.')
+      this.staging_operation.number = transitioned ? key : doublePeriod ? this.staging_operation.number : this.staging_operation.number + key
       this.display = this.staging_operation.number
     }
     if (this.State === 4 && keyIsOperator && transitioned) {
@@ -98,7 +104,17 @@ class App extends React.Component {
       this.display = this.current_number
       this.staging_operation.operator = key
     }
-    if (this.State === 5 && keyIsEquals) {
+    if (this.State === 5 && (keyIsEquals || keyIsSpecialOperator)) {
+      if(keyIsSpecialOperator){
+        if(key === '+/-'){
+          this.staging_operation.number = '-1'
+          this.staging_operation.operator = 'x'
+        }
+        else if(key === '%'){
+          this.staging_operation.number = '100'
+          this.staging_operation.operator = '/'
+        }
+      }
       this.current_number = this.calculate(this.staging_operation, this.current_number)
       this.display = this.current_number
     }
