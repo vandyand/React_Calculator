@@ -26,7 +26,7 @@ class App extends React.Component {
 
   keyPressed = (key) => {
     let transitioned = this.stateTransitions(key)
-    this.display = this.formatOutput(this.outputUpdate(key, transitioned))
+    this.display = this.outputUpdate(key, transitioned)
     this.forceUpdate()
   }
 
@@ -141,36 +141,36 @@ class App extends React.Component {
   }
 
 
-  formatOutput = (raw) => {
+  // formatOutput = (raw) => {
 
-    let rtnStr = ''
+  //   let rtnStr = ''
 
-    if (String(raw).indexOf('.') > -1) {
-      let vals = String(raw).split('.')
-      let ind9s = vals[1].indexOf('9999')
-      let ind0s = vals[1].indexOf('0000')
+  //   if (String(raw).indexOf('.') > -1) {
+  //     let vals = String(raw).split('.')
+  //     let ind9s = vals[1].indexOf('9999')
+  //     let ind0s = vals[1].indexOf('0000')
 
-      if (ind9s > -1) {
-        if (ind9s === 0) {
-          vals[0] = String(Number(vals[0]) + 1)
-          vals[1] = ''
-        } else {
-          vals[1] = String(Number(vals[1].slice(0, ind9s)) + 1)
-        }
-      }
+  //     if (ind9s > -1) {
+  //       if (ind9s === 0) {
+  //         vals[0] = String(Number(vals[0]) + 1)
+  //         vals[1] = ''
+  //       } else {
+  //         vals[1] = String(Number(vals[1].slice(0, ind9s)) + 1)
+  //       }
+  //     }
 
-      if (ind0s > -1) {
-        vals[1] = vals[1].slice(0, ind0s)
-      }
+  //     if (ind0s > -1) {
+  //       vals[1] = vals[1].slice(0, ind0s)
+  //     }
 
-      rtnStr = vals[1] || !this.lookingForSecondVal ? vals.join('.') : vals[0]
-    } else {
-      rtnStr = raw
-    }
+  //     rtnStr = vals[1] || !this.lookingForSecondVal ? vals.join('.') : vals[0]
+  //   } else {
+  //     rtnStr = raw
+  //   }
 
-    return rtnStr
+  //   return rtnStr
 
-  }
+  // }
 
   render() {
     console.log(`current number: ${this.current_number}, st_op.op: ${this.staging_operation.operator}, st_op.num: ${this.staging_operation.number}, state: ${this.State}, display: ${this.display}`)

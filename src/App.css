@@ -1,26 +1,29 @@
 *{
     margin:0px;
     padding:0px;
+    background-color: rgb(79, 105, 131);
 }
 
 .App{
     display:flex;
     flex-direction:column;
     align-items:center;
-    width:60%;
+    width:50%;
     margin:auto;
+    margin-top:5%;
     border: 8px solid #333;
     border-radius:8px;
 }
 
 .display{
     background-color:#333;
-    color:#DDD;
+    color:rgb(79, 105, 131);
     border:1px solid #777;
     width:100%;
     padding:3%;
     min-height:18px;
     text-align:right;
+    font-size:200%;
 }
 
 .row{
@@ -31,14 +34,17 @@
 
 .button{
     background-color:#333;
-    color:#DDD;
+    color:rgb(79, 105, 131);
     padding:3%;
+    padding-top:5%;
+    padding-bottom:5%;
     width:25%;
     border:1px solid #777;
+    font-size:200%;
 }
 
 .button:hover{
-    background-color:#555;
+    background-color:rgb(79, 105, 131);
     color:#fff;
 }
 
