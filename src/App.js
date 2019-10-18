@@ -21,6 +21,7 @@ class App extends React.Component {
 
     this.current_number = ''
     this.State = 0
+    this.display = '\u00a0'
   }
 
 
@@ -84,7 +85,7 @@ class App extends React.Component {
     let keyIsEquals = key === '='
 
     if(this.State === 0){
-      this.display = ''
+      this.display = '\u00a0'
     }
     if (this.State === 1 && keyIsNumber) {
       let doublePeriod = key === '.' && this.current_number.includes('.')
@@ -147,8 +148,8 @@ class App extends React.Component {
 
   //   if (String(raw).indexOf('.') > -1) {
   //     let vals = String(raw).split('.')
-  //     let ind9s = vals[1].indexOf('9999')
-  //     let ind0s = vals[1].indexOf('0000')
+  //     let ind9s = vals[1].indexOf('999999999999')
+  //     let ind0s = vals[1].indexOf('000000000000')
 
   //     if (ind9s > -1) {
   //       if (ind9s === 0) {

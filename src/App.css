@@ -1,7 +1,16 @@
 *{
+    --primary:#333;
+    --primary-light:#444;
+    --secondary: rgb(79, 105, 131);
+    --secondary-light: rgb(102, 136, 170);
+    --tertiary:rgb(180, 134, 110);
+    --tertiary-light:#FFD6C0;
+    --quaternary:#3C6E71;
+    --quaternary-light:rgb(168, 230, 235);
+
     margin:0px;
     padding:0px;
-    background-color: rgb(79, 105, 131);
+    background-color: var(--primary);
 }
 
 .App{
@@ -9,20 +18,25 @@
     flex-direction:column;
     align-items:center;
     width:50%;
+    max-width:500px;
     margin:auto;
     margin-top:5%;
-    border: 8px solid #333;
+    background-color:var(--primary);
+    border: 8px solid var(--primary);
     border-radius:8px;
 }
 
 .display{
-    background-color:#333;
-    color:rgb(79, 105, 131);
-    border:1px solid #777;
+    background-color:var(--primary);
+    color:var(--secondary);
+    border:1px solid var(--secondary);
+    border-radius: 0.25em;
+    box-sizing:border-box;
     width:100%;
     padding:3%;
-    min-height:18px;
+    min-height:38px;
     text-align:right;
+    word-wrap: break-word;
     font-size:200%;
 }
 
@@ -30,28 +44,30 @@
     display:flex;
     flex-direction:row;
     width:100%;
+    background-color:var(--primary);
 }
 
 .button{
-    background-color:#333;
-    color:rgb(79, 105, 131);
+    background-color: var(--primary);
+    color:var(--secondary);
+    border:1px solid var(--secondary);
+    border-radius:0.25em;
     padding:3%;
     padding-top:5%;
     padding-bottom:5%;
     width:25%;
-    border:1px solid #777;
     font-size:200%;
 }
 
 .button:hover{
-    background-color:rgb(79, 105, 131);
-    color:#fff;
+    background-color:var(--primary-light);
+    color:var(--secondary-light);
 }
 
 .button:active{
-    background-color:#999;
+    background-color:var(--secondary);
 }
 
-.button:visited{
-    border-color: 1px solid red;
+button:focus {
+    outline:0;
 }
