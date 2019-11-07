@@ -24,6 +24,18 @@ class App extends React.Component {
     this.display = '\u00a0'
   }
 
+  keyboardPressed = (event) => {
+    if(event.key === 'Enter'){
+      event.preventDefault()
+      this.keyPressed('=')
+    } else if(event.key === 'c'){
+      this.keyPressed('C')
+    } else if(event.key === '*'){
+      this.keyPressed('x')
+    } else if('1234567890+-x/^%.='.split('').includes(event.key)){
+      this.keyPressed(event.key)
+    }
+  }
 
   keyPressed = (key) => {
     let transitioned = this.stateTransitions(key)
@@ -32,15 +44,14 @@ class App extends React.Component {
   }
 
   stateTransitions = (key) => {
-    let keyIsNumber = key === '0' || key === '1' || key === '2' || key === '3' || key === '4' ||
-                      key === '5' || key === '6' || key === '7' || key === '8' || key === '9' || key === '.'
-    let keyIsOperator = key === '+' || key === '-' || key === 'x' || key === '/' || key === '^'
+    let keyIsNumber = '1234567890.'.split('').includes(key)
+    let keyIsOperator = '+-x/^'.split('').includes(key)
     let keyIsSpecialOperator = key === '+/-' || key === '%'
     let keyIsEquals = key === '='
     let keyIsClear = key === 'C'
     let tempState = this.State
 
-    if(keyIsClear){
+    if (keyIsClear) {
       this.State = 0
     }
     else if (this.State === 0 && keyIsNumber) {
@@ -78,13 +89,12 @@ class App extends React.Component {
   }
 
   outputUpdate = (key, transitioned) => {
-    let keyIsNumber = key === '0' || key === '1' || key === '2' || key === '3' || key === '4' ||
-                      key === '5' || key === '6' || key === '7' || key === '8' || key === '9' || key === '.'
-    let keyIsOperator = key === '+' || key === '-' || key === 'x' || key === '/' || key === '^'
+    let keyIsNumber = '1234567890.'.split('').includes(key)
+    let keyIsOperator = '+-x/^'.split('').includes(key)
     let keyIsSpecialOperator = key === '+/-' || key === '%'
     let keyIsEquals = key === '='
 
-    if(this.State === 0){
+    if (this.State === 0) {
       this.display = '\u00a0'
     }
     if (this.State === 1 && keyIsNumber) {
@@ -106,12 +116,12 @@ class App extends React.Component {
       this.staging_operation.operator = key
     }
     if (this.State === 5 && (keyIsEquals || keyIsSpecialOperator)) {
-      if(keyIsSpecialOperator){
-        if(key === '+/-'){
+      if (keyIsSpecialOperator) {
+        if (key === '+/-') {
           this.staging_operation.number = '-1'
           this.staging_operation.operator = 'x'
         }
-        else if(key === '%'){
+        else if (key === '%') {
           this.staging_operation.number = '100'
           this.staging_operation.operator = '/'
         }
@@ -178,6 +188,12 @@ class App extends React.Component {
 
     return (
       <div className="App">
+        {/* {() => this.ComponentA} */}
+        
+      {/* <KeyboardEventHandler
+        handleKeys={['1', '2', '3', '4','5','6','7','8','9','0','C','+','-','x','/','^','%','=','']}
+        onKeyEvent={(key) => this.keyPressed(key)} /> */}
+
         <div className="row">
           <div className='display'>{this.display}</div>
         </div>
@@ -187,7 +203,7 @@ class App extends React.Component {
             <div key={idx.toString()} className="row">
               {valList.map(val => {
                 return (
-                  <button key={val} className="button" onClick={() => this.keyPressed(val)}>
+                  <button autoFocus key={val} className="button" onClick={() => this.keyPressed(val)} onKeyPress={(e) => this.keyboardPressed(e)}>
                     {val}
                   </button>
                 )
