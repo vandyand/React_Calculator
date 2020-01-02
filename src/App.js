@@ -19,31 +19,41 @@ class App extends React.Component {
       "number": ''
     }
 
+    this.themes = ['theme-dark', 'theme-blue', 'theme-light-blue', 'theme-light'];
+
     this.current_number = ''
     this.State = 0
-    this.display = '\u00a0'
+    this.display = '\u00a0';
+
+    this.current_theme = localStorage.getItem('theme')
+    if (this.current_theme) {
+      document.documentElement.className = this.current_theme
+    } else {
+      document.documentElement.className = 'theme-dark'
+    }
   }
 
   keyboardPressed = (event) => {
-    if(event.key === 'Enter'){
+    console.log(event.key)
+    if (event.key === 'Enter') {
       event.preventDefault()
       this.keyPressed('=')
-    } else if(event.key === 'c'){
+    } else if (event.key === 'c') {
       this.keyPressed('C')
-    } else if(event.key === '*'){
+    } else if (event.key === '*') {
       this.keyPressed('x')
-    } else if('1234567890+-x/^%.='.split('').includes(event.key)){
+    } else if ('1234567890+-x/^%.='.split('').includes(event.key)) {
       this.keyPressed(event.key)
     }
   }
 
   keyPressed = (key) => {
-    let transitioned = this.stateTransitions(key)
-    this.display = this.outputUpdate(key, transitioned)
+    let transitioned = this.transitionEquations(key)
+    this.display = this.stateEquations(key, transitioned)
     this.forceUpdate()
   }
 
-  stateTransitions = (key) => {
+  transitionEquations = (key) => {
     let keyIsNumber = '1234567890.'.split('').includes(key)
     let keyIsOperator = '+-x/^'.split('').includes(key)
     let keyIsSpecialOperator = key === '+/-' || key === '%'
@@ -88,7 +98,7 @@ class App extends React.Component {
     return tempState !== this.State
   }
 
-  outputUpdate = (key, transitioned) => {
+  stateEquations = (key, transitioned) => {
     let keyIsNumber = '1234567890.'.split('').includes(key)
     let keyIsOperator = '+-x/^'.split('').includes(key)
     let keyIsSpecialOperator = key === '+/-' || key === '%'
@@ -151,67 +161,42 @@ class App extends React.Component {
     }
   }
 
-
-  // formatOutput = (raw) => {
-
-  //   let rtnStr = ''
-
-  //   if (String(raw).indexOf('.') > -1) {
-  //     let vals = String(raw).split('.')
-  //     let ind9s = vals[1].indexOf('999999999999')
-  //     let ind0s = vals[1].indexOf('000000000000')
-
-  //     if (ind9s > -1) {
-  //       if (ind9s === 0) {
-  //         vals[0] = String(Number(vals[0]) + 1)
-  //         vals[1] = ''
-  //       } else {
-  //         vals[1] = String(Number(vals[1].slice(0, ind9s)) + 1)
-  //       }
-  //     }
-
-  //     if (ind0s > -1) {
-  //       vals[1] = vals[1].slice(0, ind0s)
-  //     }
-
-  //     rtnStr = vals[1] || !this.lookingForSecondVal ? vals.join('.') : vals[0]
-  //   } else {
-  //     rtnStr = raw
-  //   }
-
-  //   return rtnStr
-
-  // }
+  setTheme = (themeName) => {
+    localStorage.setItem('theme', themeName);
+    document.documentElement.className = themeName;
+  }
 
   render() {
     console.log(`current number: ${this.current_number}, st_op.op: ${this.staging_operation.operator}, st_op.num: ${this.staging_operation.number}, state: ${this.State}, display: ${this.display}`)
 
     return (
-      <div className="App">
-        {/* {() => this.ComponentA} */}
-        
-      {/* <KeyboardEventHandler
-        handleKeys={['1', '2', '3', '4','5','6','7','8','9','0','C','+','-','x','/','^','%','=','']}
-        onKeyEvent={(key) => this.keyPressed(key)} /> */}
+        <div autoFocus className="App" onKeyDown={(e) => this.keyboardPressed(e)}>
 
-        <div className="row">
-          <div className='display'>{this.display}</div>
+          <div className="row">
+            <div className='display'>{this.display}</div>
+          </div>
+
+          {this.buttons.map((valList, idx) => {
+            return (
+              <div key={idx.toString()} className="row">
+                {valList.map(val => {
+                  return (
+                    <button autoFocus key={val} className="button" onClick={() => this.keyPressed(val)}>
+                      {val}
+                    </button>
+                  )
+                })}
+              </div>
+            )
+          })}
+          <div className="themes">
+            {this.themes.map((val, ind) => {
+              return (
+                <div key={ind} className="theme circle" onClick={() => this.setTheme(val)}>&nbsp;</div>
+              )
+            })}
+          </div>
         </div>
-
-        {this.buttons.map((valList, idx) => {
-          return (
-            <div key={idx.toString()} className="row">
-              {valList.map(val => {
-                return (
-                  <button autoFocus key={val} className="button" onClick={() => this.keyPressed(val)} onKeyPress={(e) => this.keyboardPressed(e)}>
-                    {val}
-                  </button>
-                )
-              })}
-            </div>
-          )
-        })}
-      </div>
     );
   }
 }
